@@ -1,4 +1,4 @@
-function accuracy = NN(data, subset)     %Nearest Neighbor function
+function accuracy = NN(data, subset)
     numCorrectlyClassified = 0;
 
     for i = 1: size(data,1)  
@@ -36,17 +36,17 @@ algorithm = input('Type the number of algorithm you want to run (1: Forward Sele
 numInstances = numRow;
 numFeautures = numColumn-1;
 
-fprintf("Number of Feautures is %d and the number of instances is %d.\n", numFeautures, numInstances);
+fprintf("Number of Features is %d and the number of instances is %d.\n", numFeautures, numInstances);
 
     accuracy = NN(data, numFeautures); %calling narest negighbor function with all feautures
  
-fprintf("Running Nearest Feauture with all %d feautures, using 'leaving-one-out' evaluation, I get an accuracy of %.1f%%.\n", numFeautures, accuracy);
+fprintf("Running Nearest Feauture with all %d features, using 'leaving-one-out' evaluation, I get an accuracy of %.1f%%.\n", numFeautures, accuracy);
 
 
-
+totalTimer = tic;   % start timer
 
 if algorithm == 1 %forward selection
-    disp("Beggining search");
+    disp("Beginning search");
     currentFeauture = [];
     remainingFeautures = 2:numColumn;  %all feautures
     bestFeautures = [];
@@ -57,21 +57,21 @@ if algorithm == 1 %forward selection
         bestFeautureStep = 0;
         
         for remainFeauture = remainingFeautures  %for each remaining feautures (1 by 1)
-            tempFeautures = [currentFeauture, remainFeauture];   %set temporary array to test if adding a new feauture helps get the best accurecy
+            tempFeautures = [currentFeauture, remainFeauture];   %set temporary array to test if adding a new feature helps get the best accuracy
             accurecy = NN(data,tempFeautures);   %call Nearest neighbor to get accurecy
             
-            fprintf("Using feauture(s) %s, accurecy is %.1f%%.\n",mat2str(tempFeautures-1), accurecy);
-            if accurecy >= bestAccurecyStep      %compare the accurecy with best accurecy in that step and update accurecy and feautures
+            fprintf("Using feature(s) %s, accuracy is %.1f%%.\n",mat2str(tempFeautures-1), accurecy);
+            if accurecy >= bestAccurecyStep      %compare the accurecy with best accuracy in that step and update accuracy and features
                 bestAccurecyStep = accurecy;
                 bestFeautureStep = remainFeauture;
             end
         end
         
-        currentFeauture = [currentFeauture, bestFeautureStep];  %add currentFeauture with the feauture step
-        remainingFeautures(remainingFeautures == bestFeautureStep) = [];    %delete the remaining feautures
-        fprintf("Features set %s was best, accurecy is %.1f%%.\n", mat2str(currentFeauture-1), bestAccurecyStep);
+        currentFeauture = [currentFeauture, bestFeautureStep];  %add currentFeauture with the feature step
+        remainingFeautures(remainingFeautures == bestFeautureStep) = [];    %delete the remaining features
+        fprintf("Features set %s was best, accuracy is %.1f%%.\n", mat2str(currentFeauture-1), bestAccurecyStep);
 
-        if bestAccurecyStep >= bestAccurecy   %compare and get best accurecy and feautures from overall feautures
+        if bestAccurecyStep >= bestAccurecy   %compare and get best accuracy and features from overall features
             bestAccurecy = bestAccurecyStep; 
             bestFeautures = [bestFeautures, bestFeautureStep]; 
         end
@@ -79,12 +79,14 @@ if algorithm == 1 %forward selection
         
     end
     fprintf("Finished searching!\n");
-    fprintf("The best feautures subset was %s, which has an accurecy of %.1f%%!\n", mat2str(bestFeautures-1), bestAccurecy);
+    fprintf("The best features subset was %s, which has an accuracy of %.1f%%!\n", mat2str(bestFeautures-1), bestAccurecy);
+    elapsedTime = toc(totalTimer);
+fprintf("Total runtime: %.1f seconds.\n", elapsedTime);
 end
 
 
 if algorithm == 2   %backward elimination
-    disp("Beggining search");
+    disp("Beginning search");
     currentFeauture = 2:numColumn;  %All feautures
     bestFeautures = currentFeauture;
     bestAccurecy = NN(data,numFeautures);
@@ -97,7 +99,7 @@ if algorithm == 2   %backward elimination
             tempFeautures = currentFeauture(currentFeauture ~=remainFeauture);
             accurecy = NN(data,tempFeautures);
             
-            fprintf("Using feauture(s) %s, accurecy is %.1f%%.\n",mat2str(tempFeautures-1), accurecy);
+            fprintf("Using feature(s) %s, accuracy is %.1f%%.\n",mat2str(tempFeautures-1), accurecy);
             if accurecy >= bestAccurecyStep  
                 bestAccurecyStep = accurecy;
                 feautureRemove = remainFeauture;
@@ -106,19 +108,21 @@ if algorithm == 2   %backward elimination
         
         currentFeauture(currentFeauture == feautureRemove) = [];  %remove the feauture that gives the best accurecy
         
-        fprintf("Features set %s was best, accurecy is %.1f%%.\n", mat2str(currentFeauture-1), bestAccurecyStep);
+        fprintf("Features set %s was best, accuracy is %.1f%%.\n", mat2str(currentFeauture-1), bestAccurecyStep);
 
-        if bestAccurecyStep >= bestAccurecy  %update accurecy with the set that has the best accurecy
+        if bestAccurecyStep >= bestAccurecy  %update accuracy with the set that has the best accurecy
             bestAccurecy = bestAccurecyStep; 
             bestFeautures = currentFeauture; 
         end
         
-        if length(currentFeauture) <= 1  %stop when currentFeature has only 1 feauture
+        if length(currentFeauture) <= 1  %stop when currentFeature has only 1 feature
             break;
         end
         
     end
     fprintf("Finished searching!\n");
-    fprintf("The best feautures subset was %s, which has an accurecy of %.1f%%!\n", mat2str(bestFeautures-1), bestAccurecy);
+    fprintf("The best features subset was %s, which has an accuracy of %.1f%%!\n", mat2str(bestFeautures-1), bestAccurecy);
+    elapsedTime = toc(totalTimer);
+fprintf("Total runtime: %.1f seconds.\n", elapsedTime);
 end
    
